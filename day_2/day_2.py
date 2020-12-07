@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 
 # initialize the valid password count
-valid_count = 0
+first_valid_count = 0
+second_valid_count = 0
 
 # open the input file
 with open('input.txt', 'r') as f:
@@ -20,9 +21,16 @@ with open('input.txt', 'r') as f:
         num1, num2 = map(int, nums.split('-'))
         # get the count of the policy letter from the password
         c = password.count(letter)
-        # check the criteria and increment the valid password count
+        # check the criteria for first puzzle
         if c >= num1 and c <= num2:
-            valid_count += 1
+            first_valid_count += 1
+        # check the criteria for second puzzle
+        if password[num1 - 1] == letter or password[num2 - 1] == letter:
+            if password[num1 - 1] == letter and password[num2 - 1] == letter:
+                pass
+            else:
+                second_valid_count += 1
 
-print(valid_count)
+print(first_valid_count)
+print(second_valid_count)
 
