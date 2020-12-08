@@ -14,7 +14,8 @@ def execute(i_ptr, acc, instruction):
     this function takes the instruction pointer(in this case line number),
     instruction string and the accumulator and executes the operation
 
-    updates and returns the accumulator and the next instruction pointer
+    updates and returns the accumulator and the increment of instruction
+    pointer
     '''
 
     # split the instruction into operation and operand
@@ -29,10 +30,10 @@ def execute(i_ptr, acc, instruction):
         acc += operand
     # if the operation is 'jmp': jumps to a new instruction pointer
     elif operation == 'jmp':
-        return i_ptr + operand, acc
+        return operand, acc
 
     # update the instruction pointer
-    return i_ptr + 1, acc
+    return 1, acc
 
 # get the total number of instructions
 n = len(instructions)
@@ -47,10 +48,15 @@ def check_acc(n, instructions):
 
     # run the loop until end of instructions
     while i_ptr < n:
-        # execute the operation and get the next instruction pointer
-        i_ptr, acc = execute(i_ptr, acc, instructions[i_ptr])
+        # execute the operation and get the next instruction pointer increment
+        i_ptr_icr, acc = execute(i_ptr, acc, instructions[i_ptr])
+        # previous instruction to check at the time of repeated instruction
+        # i.e we have to see the last executed instruction pointer
+        prev_i_ptr = i_ptr
+        i_ptr += i_ptr_icr
         # check if the next instruction is executed before
         if i_dict.get(i_ptr, False):
+            print(f'Instruction repeated from {prev_i_ptr} to {i_ptr}')
             break
         # otherwise insert the instruction into the i_dict
         i_dict[i_ptr] = True
