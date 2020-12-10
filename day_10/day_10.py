@@ -81,7 +81,7 @@ def arrange_adapters(arr):
 
     # include the device adapter jolt into the dict
     device_jolt = max(arr) + 3
-    jolts[device_jolt] = -1
+    jolts[device_jolt] = True
 
     # initialize the number of eays to arrange the first 3 jolts
     jolts[1] = 1    # as there is only one way to make a 1 jolt output -> (0, 1)
