@@ -43,4 +43,6 @@ def solve(n, arr):
 # input
 arr = [0, 12, 6, 13, 20, 1, 17]
 # first puzzle
+print(slove(2020, arr)[-1])
+# second puzzle TAKES A LOT OF TIME
 print(solve(30000000, arr)[-1])
