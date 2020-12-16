@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+# initialize a list to store field names
+fields = []
 # initialize a list to store the ranges as tuples
 nums = []
 # initialize a list to store my ticket numbers
@@ -33,6 +35,8 @@ with open('input.txt', 'r') as f:
             # <field name>: <number range> or <number range>
             # split the line to get the field name and the right side
             field, tmp = line.strip().split(':')
+            # append the fields
+            fields.append(field)
             # split tmp on ' or ' to get two ranges
             nr1, nr2 = tmp.strip().split(' or ')
             # now split two ranges on '-' to get the individual numbres
@@ -46,10 +50,15 @@ with open('input.txt', 'r') as f:
             my_ticket.extend(list(map(int, line.strip().split(','))))
         elif flag == 'nearby tickets' and ':' not in line.strip():
             # populate the nearby tickets list
-            nearby_tickets.extend(list(map(int, line.strip().split(','))))
+            nearby_tickets.append(list(map(int, line.strip().split(','))))
 
 # get the maximum value of the field
-max_ = max(max(my_ticket), max(nearby_tickets))
+max_ = max(my_ticket)
+# check the nearby tickets also
+for i in nearby_tickets:
+    if max(i) > max_:
+        max_ = max(i)
+
 # make an array to denote the indexes that are free
 arr = [0] * (max_ + 1)
 
@@ -66,9 +75,85 @@ for n in my_ticket:
     if arr[n] == 0:
         invalid.append(n)
 
-for n in nearby_tickets:
-    if arr[n] == 0:
-        invalid.append(n)
+for i in nearby_tickets:
+    for n in i:
+        if arr[n] == 0:
+            invalid.append(n)
 
 # for the first puzzle
 print(sum(invalid))
+
+# initialize a dictionary to keep track of the fields that a number can be
+possible_field_dict = {}
+
+# function to check the possible fields of a ticket number position
+def check(l, nums):
+    '''
+    this function takes a list(l) and a list of tuples (nums) and checks what
+    tuples successfully marks the boundary of all the element in the list
+    NOTE: in nums two consecutive tuples are related
+
+    it returns a list that holds all the possibility of the list having a
+    boundary index
+    '''
+    # initialize a list
+    ret = []
+    # iterate over every two tuple pairs
+    for j in range(0, len(nums), 2):
+        # unpack the consecutive tuples
+        mi1, ma1 = nums[j]
+        mi2, ma2 = nums[j + 1]
+        # det the flag
+        f = True
+        # iterate over every element of the list
+        for i in l:
+            # check if the list is in bounds
+            if mi1 <= i <= ma1 or mi2 <= i <= ma2:
+                pass
+            # otherwise break
+            else:
+                f = False
+                break
+        # if succsessful then add the index to the list
+        if f:
+            ret.append(j // 2)
+    # return the list
+    return ret
+
+
+# get all the elements by their position
+for i, v in enumerate(zip(*nearby_tickets)):
+    # filter it so that no invalid numbers gets detected
+    l = list(filter(lambda x: x not in invalid, v))
+    # populate the dictionary of the possible fields indexes
+    possible_field_dict[i] = check(l, nums)
+
+# sort the field dict for easier processing
+sorted_list = sorted(possible_field_dict.items(), key=lambda x: len(x[1]))
+
+# initialize a set to store the determined fields
+s = set()
+# initialize a dictionary to store the actual fields names with their position
+field_dict = {}
+
+for i, v in sorted_list:
+    # filter the used values
+    fl = list(filter(lambda x: x not in s, v))
+    # add the new element to the set
+    s.add(fl[0])
+    # populate the actual field dict
+    field_dict[fields[fl[0]]] = i
+
+# initialize a variable to get multiplied
+ans = 1
+
+# iterate over the keys of the fictionary
+for i in field_dict:
+    # if the key has the word 'departure' in it
+    if i.startswith('depart'):
+        # multiply with my ticket field of that name
+        ans *= my_ticket[field_dict[i]]
+
+# for the second puzzle
+print(ans)
+
