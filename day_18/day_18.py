@@ -3,7 +3,8 @@
 # class to create a different number class
 class MyNumber:
     '''
-    custom number class with overloaded addition and subtraction operator
+    custom number class with overloaded addition, subtraction and bitwise AND
+    operator
     '''
 
     def __init__(self, val):
