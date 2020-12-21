@@ -105,3 +105,7 @@ for ing in ing_counter:
 
 # for the first puzzle
 print(s)
+
+# for the second puzzle
+print(','.join([i[0] for i in sorted(final_al.items(), key=lambda x: x[1])]))
+
