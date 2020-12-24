@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+from collections import defaultdict
 import re
 
 # direction extraction pattern
@@ -38,7 +39,7 @@ with open('input.txt', 'r') as f:
 
 # initialize a visited dictionary to store the count of how many times have the
 # tile been visited
-visited = {}
+visited = defaultdict(int)
 
 # iterate over the list of directions
 for step in dirs:
@@ -56,7 +57,60 @@ for step in dirs:
         # update the point
         origin = (origin[0] + delta[0], origin[1] + delta[1])
     # increment the visited count of the tile
-    visited[origin] = visited.get(origin, 0) + 1
+    visited[origin] += 1
 
 # for the first puzzle
 print(sum([1 for i in visited if visited[i] == 1]))
+
+# initialize the black tiles set
+black_tiles = set()
+
+# add the present black tiles
+for i in visited:
+    # check if the tile is black
+    if visited[i] == 1:
+        # add the tile to the set
+        black_tiles.add(i)
+
+# loop for 100 times
+for _ in range(100):
+    # initialize a dictionary to keep track of the neighbours of a black tile
+    neighbours = defaultdict(int)
+
+    # iterate over the black tiles
+    for x, y in black_tiles:
+        # check if y is even or odd
+        if y % 2 == 0:
+            delta = [deltas_even[i] for i in deltas_even]
+        else:
+            delta = [deltas_odd[i] for i in deltas_odd]
+
+        # apply the deltas
+        for dx, dy in delta:
+            neighbours[(x + dx, y + dy)] += 1
+
+    # initialize a new black tiles set
+    new_black_tiles = set()
+
+    # iterate over the neighbours dictionary
+    for neighbour in neighbours:
+        # check if the current neighbour is a black tile
+        if neighbour in black_tiles:
+            # check if 0 or more than 2 black tile immediately adjacent to it
+            if neighbours[neighbour] == 0 or neighbours[neighbour] > 2:
+                # don't add te current tile to the new black tiles set
+                pass
+            # otherwise
+            else:
+                # add the current tile to the new black tiles set
+                new_black_tiles.add(neighbour)
+        # otherwise it's a white tile
+        elif neighbours[neighbour] == 2:
+            # add the tile to the new black tiles set
+            new_black_tiles.add(neighbour)
+
+    # set the initial black tiles to the new black tiles set
+    black_tiles = new_black_tiles
+
+# for the second puzzle
+print(len(black_tiles))
